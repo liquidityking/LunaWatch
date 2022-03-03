@@ -1,150 +1,113 @@
-from cryptocmd import CmcScraper
-import pandas as pd
-import numpy as np
-from scipy import stats
-from datetime import datetime
-from sklearn import preprocessing
-from sklearn.model_selection import KFold
-from sklearn.linear_model import LinearRegression
-import matplotlib.pyplot as plt
+import requests
 import streamlit as st
+from streamlit_lottie import st_lottie
+from PIL import Image
 
 
-def LUNA_Price():
-    # initialise scraper with time interval
-    scraper = CmcScraper("LUNA", "01-01-2021", "25-10-2030")
-
-    # get raw data as list of list
-    headers, data = scraper.get_data()
-
-    # get data in a json format
-    json_data = scraper.get_data("json")
-
-    # export the data to csv
-    scraper.export("csv")
-
-    # get dataframe for the data
-    df = scraper.get_dataframe("Close")
-
-    return (df.get("Close"))
-
-##print(LUNA_Price())
-
-def UST_Cap():
-    # initialise scraper with time interval
-    scraper = CmcScraper("UST", "01-01-2021", "25-10-2030")
-
-    # get raw data as list of list
-    headers, data = scraper.get_data()
-
-    # get data in a json format
-    json_data = scraper.get_data("json")
-
-    # export the data to csv
-    scraper.export("csv")
-
-    # get dataframe for the data
-    df = scraper.get_dataframe("Close")
-
-    return (df.get("Market Cap"))
-
-price = (LUNA_Price())[::-1]
-log_price = np.log(LUNA_Price())[::-1]
-log_cap = np.log(UST_Cap())[::-1]
+# Find more emojis here: https://www.webfx.com/tools/emoji-cheat-sheet/
+st.set_page_config(page_title="My Webpage", page_icon=":tada:", layout="wide")
 
 
-results=[]
-price_list=[]
-std_list=[]
-
-data_length=len(log_price)-1
-
-i=3
-ii=0
+def load_lottieurl(url):
+    r = requests.get(url)
+    if r.status_code != 200:
+        return None
+    return r.json()
 
 
-while ii <= data_length:
-    m, b = np.polyfit(log_cap.iloc[0:i][:], log_price.iloc[0:i][:], 1)
-    point=np.exp((m*log_cap[0:i]+b))[ii]
-    results.append(point)
-
-    std_point=np.std(log_price[0:i][:])
-    std_list.append(np.exp(std_point))
-    
-    i=i+1
-    ii=ii+1
-
-high_price = [i *2.5 for i in results]
-low_price = [i*(1/2.5) for i in results]
+# Use local CSS
+def local_css(file_name):
+    with open(file_name) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 
-date_index = log_price.index
+local_css("style/style.css")
 
-date_list = date_index.tolist()
+# ---- LOAD ASSETS ----
+lottie_coding = load_lottieurl("https://assets5.lottiefiles.com/packages/lf20_fcfjwiyb.json")
+img_contact_form = Image.open("images/yt_contact_form.png")
+img_lottie_animation = Image.open("images/yt_lottie_animation.png")
 
+# ---- HEADER SECTION ----
+with st.container():
+    st.subheader("Hi, I am Sven :wave:")
+    st.title("A Data Analyst From Germany")
+    st.write(
+        "I am passionate about finding ways to use Python and VBA to be more efficient and effective in business settings."
+    )
+    st.write("[Learn More >](https://pythonandvba.com)")
 
+# ---- WHAT I DO ----
+with st.container():
+    st.write("---")
+    left_column, right_column = st.columns(2)
+    with left_column:
+        st.header("What I do")
+        st.write("##")
+        st.write(
+            """
+            On my YouTube channel I am creating tutorials for people who:
+            - are looking for a way to leverage the power of Python in their day-to-day work.
+            - are struggling with repetitive tasks in Excel and are looking for a way to use Python and VBA.
+            - want to learn Data Analysis & Data Science to perform meaningful and impactful analyses.
+            - are working with Excel and found themselves thinking - "there has to be a better way."
+            If this sounds interesting to you, consider subscribing and turning on the notifications, so you don’t miss any content.
+            """
+        )
+        st.write("[YouTube Channel >](https://youtube.com/c/CodingIsFun)")
+    with right_column:
+        st_lottie(lottie_coding, height=300, key="coding")
 
+# ---- PROJECTS ----
+with st.container():
+    st.write("---")
+    st.header("My Projects")
+    st.write("##")
+    image_column, text_column = st.columns((1, 2))
+    with image_column:
+        st.image(img_lottie_animation)
+    with text_column:
+        st.subheader("Integrate Lottie Animations Inside Your Streamlit App")
+        st.write(
+            """
+            Learn how to use Lottie Files in Streamlit!
+            Animations make our web app more engaging and fun, and Lottie Files are the easiest way to do it!
+            In this tutorial, I'll show you exactly how to do it
+            """
+        )
+        st.markdown("[Watch Video...](https://youtu.be/TXSOitGoINE)")
+with st.container():
+    image_column, text_column = st.columns((1, 2))
+    with image_column:
+        st.image(img_contact_form)
+    with text_column:
+        st.subheader("How To Add A Contact Form To Your Streamlit App")
+        st.write(
+            """
+            Want to add a contact form to your Streamlit website?
+            In this video, I'm going to show you how to implement a contact form in your Streamlit app using the free service ‘Form Submit’.
+            """
+        )
+        st.markdown("[Watch Video...](https://youtu.be/FOULV9Xij_8)")
 
-plt.style.use('dark_background')
+# ---- CONTACT ----
+with st.container():
+    st.write("---")
+    st.header("Get In Touch With Me!")
+    st.write("##")
 
-ax = plt.gca()
-ax.set_yscale('log')
-
-
-
-plt.plot(date_list,high_price,color='tomato',alpha=0.25,linewidth=2)
-plt.plot(date_list,results,color='gold',alpha=0.25,linewidth=2)
-plt.plot(date_list,low_price,color='limegreen',alpha=0.25,linewidth=2)
-
-plt.plot(date_list,high_price,color='tomato',alpha=0.8,linewidth=0.5)
-plt.plot(date_list,results,color='gold',alpha=0.8,linewidth=0.5)
-plt.plot(date_list,low_price,color='limegreen',alpha=0.8,linewidth=0.5)
-
-plt.plot(date_list,(np.exp(log_price)).values,color='skyblue',linewidth=8,alpha=0.1)
-plt.plot(date_list,(np.exp(log_price)).values,color='skyblue',linewidth=5,alpha=0.25)
-plt.plot(date_list,(np.exp(log_price)).values,color='skyblue',linewidth=1.5,alpha=0.5)
-plt.plot(date_list,(np.exp(log_price)).values,color='skyblue',linewidth=0.5)
-
-plt.yscale("log")
-
-
-from matplotlib.ticker import FormatStrFormatter
-
-
-
-
-
-plt.grid(visible=True, which='minor', color='b', linestyle='--',alpha=0.1)
-plt.grid(axis='y')
-
-plt.tick_params(axis='y', which='minor')
-
-
-from matplotlib.ticker import FormatStrFormatter
-ax = plt.gca()
-
-ax.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
-ax.tick_params(axis='y', size=4)
-
-plt.grid(True, which="both", axis='y',alpha=0.15,color="white")
-plt.grid(True, which="both", axis='x',alpha=0.1,color="white")
-
-plt.xticks(fontsize=8)
-
-ax.tick_params(axis='y', which='major', labelsize=8,pad=12)
-ax.tick_params(axis='both', which='minor', labelsize=5)
-
-##plt.title("Value Bands",fontsize=14)
-
-from matplotlib.ticker import FuncFormatter
-def scientific(x, pos):
-    # x:  tick value - ie. what you currently see in yticks
-    # pos: a position - ie. the index of the tick (from 0 to 9 in this example)
-    return '%.1f' % x
-
-scientific_formatter = FuncFormatter(scientific)
-ax.yaxis.set_major_formatter(scientific_formatter)
-
-st.pyplot(plt.show())
-
-
+    # Documention: https://formsubmit.co/ !!! CHANGE EMAIL ADDRESS !!!
+    contact_form = """
+    <form action="https://formsubmit.co/YOUR@MAIL.COM" method="POST">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="text" name="name" placeholder="Your name" required>
+        <input type="email" name="email" placeholder="Your email" required>
+        <textarea name="message" placeholder="Your message here" required></textarea>
+        <button type="submit">Send</button>
+    </form>
+    """
+    left_column, right_column = st.columns(2)
+    with left_column:
+        st.markdown(contact_form, unsafe_allow_html=True)
+    with right_column:
+        st.empty()
