@@ -1,11 +1,11 @@
 
-cryptocmd==0.6.1
-matplotlib==3.5.1
-matplotlib-inline==0.1.3
-numpy==1.17.3
-pandas==1.3.5
-scipy==1.7.3
-seaborn==0.11.2
-sklearn==0.0
-streamlit==1.6.0
+cryptocmd
+matplotlib
+matplotlib-inline
+numpy=
+pandas
+scipy
+seaborn
+sklearn
+streamlit
 
