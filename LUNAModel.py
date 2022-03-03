@@ -145,6 +145,6 @@ def scientific(x, pos):
 scientific_formatter = FuncFormatter(scientific)
 ax.yaxis.set_major_formatter(scientific_formatter)
 
-plt.show()
+st.pyplot(plt.show())
 
 
