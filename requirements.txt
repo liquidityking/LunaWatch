@@ -2,7 +2,7 @@
 cryptocmd
 matplotlib
 matplotlib-inline
-numpy=
+numpy
 pandas
 scipy
 seaborn
