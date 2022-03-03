@@ -8,4 +8,6 @@ scipy
 seaborn
 sklearn
 streamlit
-
+streamlit_lottie
+requests
+Pillow
